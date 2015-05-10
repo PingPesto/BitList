@@ -1,11 +1,7 @@
 from helpers import get_archive_links
 from pyramid.view import view_config
-from player import Player
-import sys
-import mpd
-
-player = Player()
-
+import player
+import jobs
 
 # =======   MUSIC DAEMON CONTROLS =======
 
@@ -15,7 +11,6 @@ def my_view(request):
 
 @view_config(route_name='play', renderer='json')
 def player_play(request):
-#    try:
     player.play()
     return {'Status': 'Success'}
 
@@ -30,7 +25,7 @@ def player_status(request):
 
 @view_config(route_name='playlist', renderer='json')
 def player_playlist(request):
-    return player.get_playlist()
+    return player.playlist()
 
 @view_config(route_name='playlistseed', renderer='json')
 def player_playlist_seed(request):
@@ -54,4 +49,12 @@ def player_playlist_enqueue(request):
 
 @view_config(route_name='fetch_youtube', renderer='json')
 def fetch_youtube_url(request):
-    pass
+    pid = jobs.enqueue_transcode_youtube_link(request.matchdict['videoid'])
+    return {'JobID': pid}
+
+# ======== Redis API CONTROLS =======
+@view_config(route_name='update_cache', renderer='json')
+def enqueue_update_cache(request):
+    jobs.enqueue_s3_scraper()
+    return {'Status': 'Success'}
+
