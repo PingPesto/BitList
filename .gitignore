@@ -1,0 +1,4 @@
+credentials.sh
+*.pyc
+.venv
+octobot_dj_api.egg-info
