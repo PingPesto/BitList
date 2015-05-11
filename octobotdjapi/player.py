@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Transactional wrapping class to interact with an MPD Daemon. Leverages the
-# smarts of MPDClient2 python library. Stubbing out a lot of the common request
+# smarts of MPDClient2 python library. Stubbing out a lot of the common client
 
 from contextlib import contextmanager
 import logging
@@ -20,7 +20,7 @@ client.idletimeout = None
 
 
 @contextmanager
-def daemon_transaction(request):
+def mpd_connection(client):
     ''' Allows transactional requests between MPD and our API.
         This is important as we only want to open the TCP socket when we have
         business to conduct. This will keep our API from tanking when it cannot
@@ -28,7 +28,7 @@ def daemon_transaction(request):
     '''
     try:
         log.debug('Connecting...')
-        request.connect(host, port)
+        client.connect(host, port)
         yield
     except ConnectionError as e:
         if e.message == "Already connected":
@@ -38,8 +38,8 @@ def daemon_transaction(request):
     except:
         raise
     finally:
-        request.close()
-        request.disconnect()
+        client.close()
+        client.disconnect()
         log.debug('Disconnected')
 
 
