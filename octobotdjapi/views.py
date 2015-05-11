@@ -3,6 +3,12 @@ from pyramid.view import view_config
 import player
 import jobs
 
+# ======    FRONT END ROUTES   ==========
+
+@view_config(route_name='player', renderer='templates/player.jinja2')
+def player_view(request):
+    return {'message': 'hi'}
+
 # =======   MUSIC DAEMON CONTROLS =======
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
