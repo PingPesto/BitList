@@ -18,7 +18,6 @@ requires = [
     'rq',
     'rq-dashboard',
     'path.py',
-    'rq-scheduler',
     'boto',
     'tinys3'
     ]
