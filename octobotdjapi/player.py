@@ -10,25 +10,29 @@ from os import environ
 
 log = logging.getLogger(__name__)
 
-remote = environ['MPD_HOST']
-host = remote.split(':')[0]
-port = remote.split(':')[1]
+def client():
+    remote = environ['MPD_HOST']
+    host = remote.split(':')[0]
+    port = remote.split(':')[1]
 
-client = MPDClient()
-client.timeout = 10
-client.idletimeout = None
+    client = MPDClient()
+    client.timeout = 10
+    client.idletimeout = None
+    client.connect(host, port)
+    return client
 
-
+#Used in Player Connection manager Tween
 @contextmanager
-def mpd_connection(client):
+def connection_manager(request):
     ''' Allows transactional requests between MPD and our API.
         This is important as we only want to open the TCP socket when we have
         business to conduct. This will keep our API from tanking when it cannot
         communicate with MPD
     '''
+    import ipdb; ipdb.set_trace()
     try:
         log.debug('Connecting...')
-        client.connect(host, port)
+        request.mpd.connect(host, port)
         yield
     except ConnectionError as e:
         if e.message == "Already connected":
@@ -38,36 +42,7 @@ def mpd_connection(client):
     except:
         raise
     finally:
-        client.close()
-        client.disconnect()
+        request.mpd.close()
+        request.mpd.disconnect()
         log.debug('Disconnected')
-
-
-def stop():
-    with daemon_transaction(client):
-        client.stop()
-
-def play():
-    with daemon_transaction(client):
-        client.play()
-
-def skip():
-    with daemon_transaction(client):
-        client.next()
-
-def enqueue(link):
-     with daemon_transaction(client):
-        client.add(link)
-
-def status():
-    with daemon_transaction(client):
-        return client.status()
-
-def clear():
-    with daemon_transaction(client):
-        return client.clear()
-
-def playlist():
-    with daemon_transaction(client):
-        return client.playlist()
 
