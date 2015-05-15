@@ -8,8 +8,7 @@ import json
 @view_config(route_name='player', renderer='templates/player.jinja2')
 def player_view(request):
     return { 'playlist': request.mpd.playlist(),
-             'status': request.mpd.status(),
-             'listen-url': os.environ['LISTEN_URL'] }
+             'status': request.mpd.status()}
 
 
 
@@ -37,21 +36,26 @@ def player_status(request):
 def player_playlist(request):
     return request.mpd.playlist()
 
+@view_config(route_name='playlistshuffle', renderer='json')
+def player_playlist_shuffle(request):
+    request.mpd.shuffle()
+    return request.mpd.playlist()
+
 @view_config(route_name='playlistseed', renderer='json')
 def player_playlist_seed(request):
     for song in get_archive_links():
         request.mpd.add(song)
-    return {'Status': 'Success'}
+    return request.mpd.playlist()
 
 @view_config(route_name='playlistclear', renderer='json')
 def player_playlist_clear(request):
     request.mpd.clear()
-    return {'Status': 'Success'}
+    return request.mpd.playlist()
 
 @view_config(route_name='playlistenqueue', renderer='json')
 def player_playlist_enqueue(request):
     request.mpd.add(song)
-    return {'Status': 'Success'}
+    return request.mpd.playlist()
 
 
 # ======== FETCH API CONTROLS =======
