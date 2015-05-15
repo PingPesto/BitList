@@ -1,5 +1,6 @@
+from pyramid.events import NewRequest
 from pyramid.config import Configurator
-
+import player
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -20,5 +21,11 @@ def main(global_config, **settings):
     config.add_route('fetch_youtube', '/fetch/youtube/{videoid}')
     config.add_route('update_cache', '/cache/update')
 
+
     config.scan()
+    config.registry.mpd_client = player.client()
+    config.add_request_method(lambda req : player.client(), "mpd", reify=True)
+
+    # import ipdb; ipdb.set_trace();
     return config.make_wsgi_app()
+

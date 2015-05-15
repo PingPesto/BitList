@@ -5,6 +5,7 @@ from os import environ, remove
 from path import Path
 from redis import Redis
 from rq import Queue
+from player import client as mpd
 import shutil
 import tinys3
 import urllib
@@ -31,11 +32,15 @@ def upload_file(filepath, delete=False, playlist_update=True):
     with open(filepath, 'rb') as f:
         conn = tinys3.Connection(s3_access_key, s3_secret_key, tls=True)
         conn.upload(base, f, s3_bucket)
+        if playlist_update:
+            # Calculate the URL without an S3 query
+            key_url = "https://s3.amazonaws.com/{}/{}".format(s3_bucket,
+                       filepath.basename())
+            player = mpd()
+            player.add(key_url) # TODO
     if delete:
             remove(filepath)
 
-    if playlist_update:
-        pass # TODO
 
 # use boto to list files, its huge
 def scan_s3_files():
