@@ -8,7 +8,8 @@ import json
 @view_config(route_name='player', renderer='templates/player.jinja2')
 def player_view(request):
     return { 'playlist': request.mpd.playlist(),
-             'status': request.mpd.status()}
+             'status': request.mpd.status(),
+             'listen-url': os.environ['LISTEN_URL'] }
 
 
 
