@@ -1,16 +1,15 @@
 from boto.s3.connection import S3Connection
-from tempfile import mkdtemp
 from octobotdjapi.downloader import youtube
 from os import environ, remove, rmdir
 from path import Path
+from player import client as mpd
 from redis import Redis
 from rq import Queue
 from rq.decorators import job
-from player import client as mpd
 import shutil
+from tempfile import mkdtemp
 import tinys3
 import urllib
-import player
 
 s3_access_key = environ['S3_ACCESS_KEY']
 s3_secret_key = environ['S3_SECRET_KEY']
