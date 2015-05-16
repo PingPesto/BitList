@@ -7,18 +7,18 @@ import json
 # ======    FRONT END ROUTES   ==========
 @view_config(route_name='player', renderer='templates/player.jinja2')
 def player_view(request):
+    server_path = request.host.split(':')[0]
     return { 'playlist': request.mpd.playlist(),
-             'status': request.mpd.status()}
+             'status': request.mpd.status(),
+             'player_host': server_path}
 
-
-
-
-# =======   MUSIC DAEMON CONTROLS =======
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
 def my_view(request):
-    return {'project': 'octobot-dj-api'}
+    return {'project': 'bitlist'}
 
+
+# =======   MUSIC DAEMON CONTROLS =======
 @view_config(route_name='play', renderer='json')
 def player_play(request):
     request.mpd.play()
