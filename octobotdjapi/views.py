@@ -62,8 +62,8 @@ def player_playlist_enqueue(request):
 
 @view_config(route_name='fetch_youtube', renderer='json')
 def fetch_youtube_url(request):
-    pid = jobs.enqueue_transcode_youtube_link(request.matchdict['videoid'])
-    return {'JobID': pid}
+    pid = jobs.transcode_youtube_link.delay(request.matchdict['videoid'])
+    return {'JobID': pid.id}
 
 # ======== Redis API CONTROLS =======
 @view_config(route_name='update_cache', renderer='json')
