@@ -20,7 +20,8 @@ requires = [
     'rq-dashboard',
     'path.py',
     'boto',
-    'tinys3'
+    'tinys3',
+    'honcho',
     ]
 
 setup(name='octobot-dj-api',
