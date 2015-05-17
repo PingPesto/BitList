@@ -70,7 +70,10 @@ def transcode_soundcloud_link(user, song):
     url = "https://www.soundcloud.com/{}/{}".format(user, song)
 
     tmp = mkdtemp()
-    soundcloud.download_url(url, temp_directory=tmp)
+    try:
+        soundcloud.download_url(url, temp_directory=tmp)
+    except:
+        shutil.rmtree(tmp)
 
     p = Path(tmp)
     for f in p.files():
