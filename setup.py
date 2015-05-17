@@ -21,6 +21,7 @@ requires = [
     'boto',
     'tinys3',
     'honcho',
+    'eyed3',
     ]
 
 setup(name='bitlist',
