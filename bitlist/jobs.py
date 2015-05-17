@@ -1,4 +1,5 @@
 from bitlist.downloader import youtube
+from bitlist.downloader import soundcloud
 from boto.s3.connection import S3Connection
 from os import environ, remove, rmdir
 from path import Path
@@ -34,7 +35,7 @@ def upload_file(filepath, delete=False, playlist_update=True):
 
     if delete:
         remove(filepath)
-        if len(filepath.dirname().files()) == 0:
+        if len(filepath.dirname().files('*.mp3')) == 0:
             filepath.dirname().rmdir_p()
 
     if playlist_update:
@@ -58,6 +59,18 @@ def transcode_youtube_link(url):
         youtube.download_url(url, temp_directory=tmp)
     except:
         shutil.rmtree(tmp)
+
+    p = Path(tmp)
+    for f in p.files():
+        upload_file.delay(f, delete=True)
+
+# Transcode and upload youtube music/videos
+@job('low', connection=worker_redis_conn, timeout=900)
+def transcode_soundcloud_link(user, song):
+    url = "https://www.soundcloud.com/{}/{}".format(user, song)
+
+    tmp = mkdtemp()
+    soundcloud.download_url(url, temp_directory=tmp)
 
     p = Path(tmp)
     for f in p.files():
