@@ -21,7 +21,7 @@ requires = [
     'boto',
     'tinys3',
     'honcho',
-    'eyed3',
+    'spotify-ripper',
     ]
 
 setup(name='bitlist',

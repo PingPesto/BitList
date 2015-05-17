@@ -71,6 +71,11 @@ def fetch_soundcloud_url(request):
                                                request.matchdict['songid'])
     return {'JobID': pid.id}
 
+@view_config(route_name='fetch_spotify', renderer='json')
+def fetch_spotify_url(request):
+    pid = jobs.transcode_spotify_link.delay(request.matchdict['resource'])
+    return {'JobID': pid.id}
+
 
 
 # ======== Redis API CONTROLS =======
