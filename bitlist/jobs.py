@@ -39,7 +39,7 @@ def upload_file(filepath, delete=False, playlist_update=True):
         if len(filepath.dirname().files('*.mp3')) == 0:
             filepath.dirname().rmdir_p()
 
-    if playlist_update:
+    if playlist_update and ".mp3" in filepath.basename():
         # Calculate the URL without an S3 query
         key_url = "https://s3.amazonaws.com/{}/{}".format(s3_bucket,
                    filepath.basename())
@@ -61,6 +61,7 @@ def transcode_youtube_link(url):
         youtube.download_url(url, temp_directory=tmp)
     except:
         shutil.rmtree(tmp)
+        print "Exception occurred during transcoding"
 
     p = Path(tmp)
     for f in p.files():
