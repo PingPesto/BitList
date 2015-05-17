@@ -65,6 +65,14 @@ def fetch_youtube_url(request):
     pid = jobs.transcode_youtube_link.delay(request.matchdict['videoid'])
     return {'JobID': pid.id}
 
+@view_config(route_name='fetch_soundcloud', renderer='json')
+def fetch_soundcloud_url(request):
+    pid = jobs.transcode_soundcloud_link.delay(request.matchdict['user'],
+                                               request.matchdict['songid'])
+    return {'JobID': pid.id}
+
+
+
 # ======== Redis API CONTROLS =======
 @view_config(route_name='update_cache', renderer='json')
 def enqueue_update_cache(request):
