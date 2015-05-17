@@ -45,6 +45,7 @@ def upload_file(filepath, delete=False, playlist_update=True):
                    filepath.basename())
         player = mpd()
         player.add(key_url)
+        print "Added {}".format(key_url)
 
 
 # Transcode and upload youtube music/videos

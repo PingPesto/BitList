@@ -70,7 +70,7 @@ def embed_metadata(filepath):
         audiofile.tags['title'] = trackdata['title']
         audiofile.tags['website'] = trackdata['webpage_url']
         audiofile.tags.save()
-        print "Updated audio file with {}"(audofile.tags)
+        print "Updated audio file with {}"(audiofile.tags)
 
 def trim_silence(filepath):
     pass
