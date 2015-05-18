@@ -72,28 +72,28 @@ def transcode_youtube_link(url):
 def transcode_soundcloud_link(user, song):
     url = "https://www.soundcloud.com/{}/{}".format(user, song)
 
-    tmp = mkdtemp()
+    dtmp = mkdtemp()
+    tmp = Path(dtmp)
     try:
         soundcloud.download_url(url, temp_directory=tmp)
     except:
         shutil.rmtree(tmp)
 
-    p = Path(tmp)
-    for f in p.files():
+    for f in tmp.files():
         upload_file.delay(f, delete=True)
 
 
 # Transcode and upload spotify music
 @job('low', connection=worker_redis_conn, timeout=900)
 def transcode_spotify_link(url):
-    tmp = mkdtemp()
+    dtmp = mkdtemp()
+    tmp = Path(dtmp)
     try:
         spotify.download_url(url, temp_directory=tmp)
     except:
         shutil.rmtree(tmp)
 
-    p = Path(tmp)
-    for f in p.files():
+    for f in tmp.files():
         upload_file.delay(f, delete=True)
 
 
