@@ -13,7 +13,10 @@ def download_url(url, temp_directory='/tmp'):
           " -A -F  {}  ".format(temp_directory, user, passwd, url)
     # I hate this...
     check_call(shlex.split(cmd))
-
+    scrub_filenames(temp_directory)
     return temp_directory
 
 
+def scrub_filenames(temp_directory):
+    for f in temp_directory.files():
+        f.rename(f.replace(' ', '_'))
