@@ -1,4 +1,4 @@
-from helpers import get_archive_links
+from helpers import get_archive_links, get_random_song
 import jobs
 import json
 import player
@@ -10,10 +10,19 @@ from .security import USERS
 # ======    FRONT END ROUTES   ==========
 @view_config(route_name='player', renderer='templates/player.jinja2')
 def player_view(request):
-    server_path = request.host.split(':')[0]
-    return { 'playlist': request.mpd.playlist(),
-             'status': request.mpd.status(),
-             'player_host': server_path}
+    server_path = "http://{}:8000".format(request.host.split(':')[0])
+    songs = DBSession.query(Song)
+    status = request.mpd.status()
+    playlist = request.mpd.playlist()
+    if status['state'] != 'play':
+        random_song = get_random_song()
+        request.mpd.add(random_song.url)
+        request.mpd.play()
+        status['state'] = 'play'
+    return { 'playlist': playlist,
+             'status': status,
+             'player_host': server_path,
+             'library': songs.all()}
 
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
