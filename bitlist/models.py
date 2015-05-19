@@ -28,7 +28,7 @@ class Song(Base):
     artist = Column(String(250))
     album = Column(String(250))
     album_art = Column(Text)
-    url = Column(String(300), unique=True)
+    url = Column(String(250), unique=True)
     original_url = Column(Text)
     addedby = Column(Text)
 
