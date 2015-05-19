@@ -25,6 +25,7 @@ package_status 'build-essential'
 package_status 'lame'
 package_status 'python-virtualenv'
 package_status 'wget'
+package_status 'libmysqlclient-dev'
 
 wget https://developer.spotify.com/download/libspotify/libspotify-12.1.51-Linux-x86_64-release.tar.gz -O /tmp/libspotify.tar.gz
 cd /tmp
