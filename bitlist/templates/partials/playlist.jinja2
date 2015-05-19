@@ -1,16 +1,20 @@
 
-  <ul id="bitlist-default" style="display:none;">
-    <li data-source="bitlist-stream"  data-thumbnail-path="/content/thumbnails/large1.jpg">
-      <p class="minimalDarkCategoriesTitle"><span class="bold">Title: </span>Default Playlist</p>
-      <p class="minimalDarkCategoriesType"><span class="bold">Type: </span><span class="minimalDarkCategoriesTypeIn">HTML</span></p>
-      <p class="minimalDarkCategoriesDescription"><span class="bold">Description: </span>Collaborative Playlist Music - BITLIST.</p>
-    </li>
-  </ul>
-
-  <ul id="bitlist-stream" style="display:none;">
-    <li data-path="http://{{player_host}}:8000/;mp3" data-thumbpath="/static/img/bitlist-station-thumb.png" data-downloadable="no" data-duration="00:00">
-      <p><span style="font-weight:bold; color:#105FD0;">Bit List - Collaborative Playlists</span></p>
-    </li>
-  </ul>
-
+<ul class="list-group list-group-lg no-radius no-border no-bg m-t-n-xxs m-b-none auto">
+{% for song in playlist %}
+  <li class="list-group-item">
+    <div class="pull-right m-l">
+      <!-- <a href="#" class="m-r-sm"><i class="icon-cloud-download"></i></a>
+      <a href="#" class="m-r-sm"><i class="icon-plus"></i></a>
+      <a href="#"><i class="icon-close"></i></a> -->
+    </div>
+    <a href="#" class="jp-play-me m-r-sm pull-left">
+      <i class="icon-control-play text"></i>
+      <i class="icon-control-pause text-active"></i>
+    </a>
+    <div class="clear text-ellipsis">
+      <span>{{ song |replace("file: http://s3.amazonaws.com/oontz-room/", "")|replace("_", " ") |truncate(100) }}</span>
+    </div>
+  </li>
+{% endfor %}
+</ul>
 
