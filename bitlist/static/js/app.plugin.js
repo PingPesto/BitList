@@ -141,7 +141,20 @@
 			}
 		);
 	});
-	
+
+    // Add Library Enqueue method
+    $('.library-item').on('click', function(e){
+       console.log($(this).data('value'))
+       $.ajax({
+           url: "/player/playlist/queue/" + $(this).data('value'),
+       }).done(function(data) {
+           $(this).addClass("inactive")
+           console.log(data)
+           $('#playlist-item-template ul li').find('.song-title').text(data[data.length-1])
+           $('#playlist-item-template ul li').clone().appendTo('#playing-list').fadeIn(3000)
+       });
+    });
+
 	// add notes
 	function addMsg($msg){
 		var $el = $('.nav-user'), $n = $('.count:first', $el), $v = parseInt($n.text());
