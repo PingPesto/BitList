@@ -13,6 +13,11 @@ requires = [
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
     'pyramid_jinja2',
+    'pyramid_tm',
+    'SQLAlchemy',
+    'mysql-python',
+    'transaction',
+    'zope.sqlalchemy',
     'waitress',
     'python-mpd2',
     'youtube-dl',
@@ -47,5 +52,7 @@ setup(name='bitlist',
       entry_points="""\
       [paste.app_factory]
       main = bitlist:main
+      [console_scripts]
+      initialize_bitlist_db = bitlist.scripts.initializedb:main
       """,
       )

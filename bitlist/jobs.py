@@ -105,5 +105,5 @@ def scan_s3_files():
         if item.name == None: continue
         url = "http://s3.amazonaws.com/{}/{}".format(s3_bucket,item.name)
         url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
-        redis_conn.set(item.name, url)
+        metadata_redis_conn.set(item.name, url)
 

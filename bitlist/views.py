@@ -1,8 +1,11 @@
 from helpers import get_archive_links
-from pyramid.view import view_config
-import player
 import jobs
 import json
+import player
+from pyramid.view import view_config
+from .models import DBSession, Song
+from .security import USERS
+
 
 # ======    FRONT END ROUTES   ==========
 @view_config(route_name='player', renderer='templates/player.jinja2')
@@ -17,6 +20,10 @@ def player_view(request):
 def my_view(request):
     return {'project': 'bitlist'}
 
+@view_config(route_name='songs', renderer='json')
+def library(request):
+    songs = DBSession.query(Song)
+    return dict(songs=songs.all())
 
 # =======   MUSIC DAEMON CONTROLS =======
 @view_config(route_name='play', renderer='json')
@@ -44,8 +51,9 @@ def player_playlist_shuffle(request):
 @view_config(route_name='playlistseed', renderer='json')
 def player_playlist_seed(request):
     for song in get_archive_links():
-        request.mpd.add(song)
-    return request.mpd.playlist()
+        if ".mp3" in song:
+            DBSession.add(Song(title=song.split('/')[-1].split('.mp3')[0].replace("_", " "),
+                   url=song))
 
 @view_config(route_name='playlistclear', renderer='json')
 def player_playlist_clear(request):
