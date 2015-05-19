@@ -1,27 +1,136 @@
-<html>
-  <head>
-    <link rel="shortcut icon" href="${request.static_url('octobotdjapi:static/favicon.ico')}">
+<!DOCTYPE html>
+<html lang="en" class="app">
+<head>
+  <meta charset="utf-8" />
+  <title>BitList | Collaborative Playlists</title>
+  <meta name="description" content="app, web app, responsive, admin dashboard, admin, flat, flat ui, ui kit, off screen nav" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <link rel="stylesheet" href="/js/jPlayer/jplayer.flat.css" type="text/css" />
+  <link rel="stylesheet" href="/css/bootstrap.css" type="text/css" />
+  <link rel="stylesheet" href="/css/animate.css" type="text/css" />
+  <link rel="stylesheet" href="/css/font-awesome.min.css" type="text/css" />
+  <link rel="stylesheet" href="/css/simple-line-icons.css" type="text/css" />
+  <link rel="stylesheet" href="/css/font.css" type="text/css" />
+  <link rel="stylesheet" href="/css/app.css" type="text/css" />  
+    <!--[if lt IE 9]>
+    <script src="js/ie/html5shiv.js"></script>
+    <script src="js/ie/respond.min.js"></script>
+    <script src="js/ie/excanvas.js"></script>
+  <![endif]-->
+</head>
+<body class="">
+  <section class="vbox">
+    {% include 'partials/top-nav.jinja2' %}
+    <section>
+      <section class="hbox stretch">
+        <!-- .aside -->
+        <aside class="bg-black dk nav-xs aside hidden-print" id="nav">
+          <section class="vbox">
+            <section class="w-f-md scrollable">
+              <div class="slim-scroll" data-height="auto" data-disable-fade-out="true" data-distance="0" data-size="10px" data-railOpacity="0.2">
 
-    <!-- Google Fonts -->
-    <link href='http://fonts.googleapis.com/css?family=PT+Sans' rel='stylesheet' type='text/css'>
 
-    <link href="/static/css/player.css" rel="stylesheet" />
 
-    <!-- Sticky player -->
-    <link href="/static/css/global.css" rel="stylesheet" />
-    <script type="text/javascript" src="/static/js/player.js"></script>
+                <!-- nav -->
+                {% include 'partials/left-nav.jinja2' %} 
+                <!-- / nav -->
+              </div>
+            </section>
 
-  </head>
-  <body>
-
-    <ul class="playlist">
-    {% for item in playlist %}
-        <li>{{item}}</li>
-    {% endfor %}
-    </ul>
-
-    {% include 'partials/playlist.jinja2' %}
-    {% include 'partials/player_initializer.jinja2' %}
-
-    </body>
+            <footer class="footer hidden-xs no-padder text-center-nav-xs">
+              <div class="bg hidden-xs ">
+                  <div class="dropdown dropup wrapper-sm clearfix">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                      <span class="thumb-sm avatar pull-left m-l-xs">
+                        <img src="images/a3.png" class="dker" alt="...">
+                        <i class="on b-black"></i>
+                      </span>
+                      <span class="hidden-nav-xs clear">
+                        <span class="block m-l">
+                          <strong class="font-bold text-lt">John.Smith</strong> 
+                          <b class="caret"></b>
+                        </span>
+                        <span class="text-muted text-xs block m-l">Art Director</span>
+                      </span>
+                    </a>
+                    <ul class="dropdown-menu animated fadeInRight aside text-left">
+                      <li>
+                        <span class="arrow bottom hidden-nav-xs"></span>
+                        <a href="#">Settings</a>
+                      </li>
+                      <li>
+                        <a href="profile.html">Profile</a>
+                      </li>
+                      <li>
+                        <a href="#">
+                          <span class="badge bg-danger pull-right">3</span>
+                          Notifications
+                        </a>
+                      </li>
+                      <li>
+                        <a href="docs.html">Help</a>
+                      </li>
+                      <li class="divider"></li>
+                      <li>
+                        <a href="modal.lockme.html" data-toggle="ajaxModal" >Logout</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+            </footer>
+          </section>
+        </aside>
+        <!-- /.aside -->
+        <section id="content">
+          <section class="vbox">
+          <section class="w-f-md">
+            <section class="hbox stretch bg-black dker">
+              <!-- side content -->
+              <aside class="col-sm-5 no-padder" id="sidebar">
+                <section class="vbox animated fadeInUp">
+                  <section class="scrollable">
+                    <div class="m-t-n-xxs item pos-rlt">
+                      <div class="top text-right">
+                        <span class="musicbar animate bg-success bg-empty inline m-r-lg m-t" style="width:25px;height:30px">
+                          <span class="bar1 a3 lter"></span>
+                          <span class="bar2 a5 lt"></span>
+                          <span class="bar3 a1 bg"></span>
+                          <span class="bar4 a4 dk"></span>
+                          <span class="bar5 a2 dker"></span>
+                        </span>
+                      </div>
+                      <div class="bottom gd bg-info wrapper-lg">
+                        <span class="pull-right text-sm">{{ playlist |count }}<br> Songs </span>
+                        <span class="h2 font-thin"> {{ playlist[0] |replace('file: http://s3.amazonaws.com/oontz-room/','')|replace('_', ' ')|truncate(50) }}</span>
+                      </div>
+                      <img class="img-full" src="images/bitlist-concept-1.jpg" alt="...">
+                    </div>
+                    {% include 'partials/playlist.jinja2' %} 
+                  </section>
+                </section>
+              </aside>
+              <!-- / side content -->
+              {% include 'partials/library.jinja2' %}
+             {% include 'partials/search-providers.jinja2' %}
+            </section>
+          </section>
+          {% include 'partials/jplayer.jinja2' %}
+          
+        </section>
+          <a href="#" class="hide nav-off-screen-block" data-toggle="class:nav-off-screen,open" data-target="#nav,html"></a>
+        </section>
+      </section>
+    </section>    
+  </section>
+  <script src="/js/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="/js/bootstrap.js"></script>
+  <!-- App -->
+  <script src="/js/app.js"></script>  
+  <script src="/js/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="/js/app.plugin.js"></script>
+  <script type="text/javascript" src="/js/jPlayer/jquery.jplayer.min.js"></script>
+  <script type="text/javascript" src="/js/jPlayer/add-on/jplayer.playlist.min.js"></script>
+  <script type="text/javascript" src="/js/jPlayer/demo.js"></script>
+</body>
 </html>

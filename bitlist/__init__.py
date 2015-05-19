@@ -29,6 +29,11 @@ def main(global_config, **settings):
     config.set_authorization_policy(authz_policy)
 
     config.add_static_view('static', 'static', cache_max_age=3600)
+    config.add_static_view('js', 'static/js', cache_max_age=3600)
+    config.add_static_view('images', 'static/images', cache_max_age=3600)
+    config.add_static_view('css', 'static/css', cache_max_age=3600)
+    config.add_static_view('fonts', 'static/fonts', cache_max_age=3600)
+
     config.add_route('home', '/')
     config.add_route('songs', '/songs')
     config.add_route('player', '/player')

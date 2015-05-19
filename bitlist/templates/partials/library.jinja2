@@ -1,0 +1,25 @@
+
+
+            <section class="col-sm-4 no-padder bg">
+                <section class="vbox">
+                  <section class="scrollable hover">
+                    <ul class="list-group list-group-lg no-bg auto m-b-none m-t-n-xxs">
+                    {% for song in library %}
+                      <li class="list-group-item clearfix" data-value="{{ song.uid }}">
+                        <a href="#" class="jp-play-me pull-right m-t-sm m-l text-md">
+                          <i class="icon-control-play text"></i>
+                          <i class="icon-control-pause text-active"></i>
+                        </a>
+                        <a href="#" class="pull-left thumb-sm m-r">
+                          <img src="images/m0.jpg" alt="...">
+                        </a>
+                        <a class="clear" href="#">
+                          <span class="block text-ellipsis">{{ song.title |truncate(80) }}</span>
+                          <small class="text-muted">by Soph Ashe</small>
+                        </a>
+                      </li>
+                    {% endfor %}
+                     </ul>
+                  </section>
+                </section>
+              </section>

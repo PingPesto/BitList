@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+from bitlist.models import DBSession, Song
 import os
+import random
 from redis import Redis
 
 redis_dsn = os.environ['REDIS_HOST']
@@ -26,3 +28,8 @@ def get_archive_links():
 
     return links
 
+def get_random_song():
+    total_songs = DBSession.query(Song).count()
+    randoms = random.sample(range(total_songs),2)
+    random_song = DBSession.query(Song).filter_by(uid=randoms[0]).one()
+    return random_song
