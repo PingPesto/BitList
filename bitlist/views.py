@@ -71,7 +71,9 @@ def player_playlist_clear(request):
 
 @view_config(route_name='playlistenqueue', renderer='json')
 def player_playlist_enqueue(request):
-    request.mpd.add(song)
+    song_id = request.matchdict['song']
+    song = DBSession.query(Song).filter_by(uid=song_id).one()
+    request.mpd.add(song.url)
     return request.mpd.playlist()
 
 
