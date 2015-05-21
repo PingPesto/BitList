@@ -19,7 +19,7 @@ def player_view(request):
     playlist = current_playlist()
     if status['state'] != 'play':
         random_song = get_random_song()
-        add_to_playlist(random_song.id)
+        add_to_playlist(request, random_song.id)
         request.mpd.play()
         status['state'] = 'play'
     return { 'playlist': playlist,
