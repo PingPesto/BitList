@@ -2,6 +2,9 @@ html {
   background-color: #f2f4f8;
   overflow-x: hidden;
 }
+.bg-orange {
+  background-color: #dd4814;
+}
 body {
   font-family: "Source Sans Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
@@ -39,7 +42,7 @@ small,
   font-weight: bold;
 }
 .badge {
-  background-color: #aac4c8;
+  background-color: #C0C0C0;
 }
 .badge.up {
   position: relative;
@@ -3339,7 +3342,7 @@ a.bg-light:focus {
   right: 0;
 }
 .avatar i.on {
-  background-color: #1ab667;
+  background-color: #dd4814;
 }
 .avatar i.off {
   background-color: #939aa0;
