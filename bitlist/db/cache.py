@@ -3,9 +3,9 @@
 # Redis Connection agent/manager - because having redis littered around my
 # code was OBNOXIOUS
 
-from os import environ
+from os import getenv
 from redis import Redis
-
+import urlparse
 
 # Redis DB schema
 # 0 / Job Data
@@ -18,12 +18,16 @@ from redis import Redis
 class Cache:
 
     def __init__(self):
-        redis_dsn = environ['REDIS_HOST']
-        self.redis_host = redis_dsn.split(':')[0]
-        self.redis_port = redis_dsn.split(':')[1]
+        redis_dsn = getenv('REDIS_URL')
+        if not redis_dsn:
+            raise RuntimeError('Setup Redis first.')
+
+        urlparse.uses_netloc.append('redis')
+        url = urlparse.urlparse(redis_dsn)
+        self.host = url.hostname
+        self.port = url.port
+        self.password = url.password
 
     def connection(self, database=0):
-        return Redis(host=self.redis_host, port=self.redis_port, db=database)
-
-
+        return Redis(host=self.host, port=self.port, db=database, password=self.password)
 
