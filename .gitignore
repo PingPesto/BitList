@@ -11,3 +11,4 @@ bitlist.egg-info
 
 # Ingore credentials
 .env
+spotify_appkey.key
