@@ -1,32 +1,14 @@
+from bitlist.db.cache import Cache
 from pyramid.events import NewRequest
-from pyramid.authentication import AuthTktAuthenticationPolicy
-from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.config import Configurator
-from sqlalchemy import engine_from_config
-from .security import groupfinder
 import player
-
-from .models import (
-    DBSession,
-    Base,
-    )
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    engine = engine_from_config(settings, 'sqlalchemy.')
-    DBSession.configure(bind=engine)
-    Base.metadata.bind = engine
-    config = Configurator(settings=settings, root_factory='bitlist.models.Root')
+    config = Configurator(settings=settings)
     config.include('pyramid_chameleon')
     config.include('pyramid_jinja2')
-
-    # Security Policies
-    authn_policy = AuthTktAuthenticationPolicy(
-        'sosecret', callback=groupfinder, hashalg='sha512')
-    authz_policy = ACLAuthorizationPolicy()
-    config.set_authentication_policy(authn_policy)
-    config.set_authorization_policy(authz_policy)
 
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_static_view('js', 'static/js', cache_max_age=3600)
@@ -54,7 +36,9 @@ def main(global_config, **settings):
 
     config.scan()
     config.registry.mpd_client = player.client()
+    config.registry.song_cache = Cache().connection(2)
     config.add_request_method(lambda req : player.client(), "mpd", reify=True)
+    config.add_request_method(lambda req : Cache().connection(2), "song_cache", reify=True)
 
     # import ipdb; ipdb.set_trace();
     return config.make_wsgi_app()
