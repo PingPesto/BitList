@@ -1,26 +1,25 @@
 #!/usr/bin/env python
-
-from bitlist.models import DBSession, Song
+from bitlist.models.song import Song
+from bitlist.db.cache import Cache
+import json
+from mutagen.easyid3 import EasyID3
+from mutagen.mp3 import MP3
 import os
+import pickle
 import random
 from redis import Redis
+from urllib import unquote_plus
 
-redis_dsn = os.environ['REDIS_HOST']
-redis_host = redis_dsn.split(':')[0]
-redis_port = redis_dsn.split(':')[1]
+cache = Cache()
 
-
-
-
-def pexpand(path):
-    return os.path.abspath(os.path.expanduser(path))
-
-def output_dir(out):
-    if not os.path.exists(out):
-        os.makedirs(out)
+def sanitize_string(song_title):
+    # do basic transforms/filters on the song_title passed
+    song_title = song_title.replace('_', ' ')
+    song_title = song_title.replace('.mp3', '')
+    return unquote_plus(song_title)
 
 def get_archive_links():
-    conn = Redis(host=redis_host, port=redis_port, db=1)
+    conn = cache.connection(1)
     archive = conn.keys()
     links = []
     for f in archive:
@@ -29,7 +28,24 @@ def get_archive_links():
     return links
 
 def get_random_song():
-    total_songs = DBSession.query(Song).count()
-    randoms = random.sample(range(total_songs),2)
-    random_song = DBSession.query(Song).filter_by(uid=randoms[0]).one()
+    cache = Cache().connection(2)
+    total_library_size = len(cache.keys())
+    randoms = random.sample(range(1, total_library_size),1)
+    random_song = pickle.loads(cache.get(cache.keys()[random]))
     return random_song
+
+def redis_song_library():
+    conn = cache.connection(2)
+    archive = conn.keys()
+    links = []
+    for f in archive:
+        links.append(pickle.loads(conn.get(f)))
+    return links
+
+
+def update_database(filepath, s3_url):
+    audiofile = MP3(afile, ID3=EasyID3)
+    s = Song(audiofile.tags['title'],
+             original_url=audiofile.tags['website'])
+    s.save()
+    return s
