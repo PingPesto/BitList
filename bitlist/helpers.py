@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from bitlist.models.song import Song
 from bitlist.db.cache import Cache
+from bitlist.models.song import Song
 import json
 from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
@@ -41,8 +41,13 @@ def add_to_playlist(request, song_id):
     song = get_song_by_id(song_id)
     playlist = cache.connection(3)
     playlist.rpush('playlist', song.id)
-    request.mpd.add(song.url)
-    return request.mpd.playlist()
+    # use either request object, or player client
+    # passed in from job context
+    try:
+        request.mpd.add(song.url)
+    except:
+        request.add(song.url)
+    return current_playlist()
 
 def current_playlist():
     playdb = cache.connection(3)
@@ -57,6 +62,6 @@ def current_playlist():
 def update_database(filepath, s3_url):
     audiofile = MP3(filepath, ID3=EasyID3)
     s = Song(audiofile.tags['title'],
-             original_url=audiofile.tags['website'])
+             s3_url, original_url=audiofile.tags['website'])
     s.save()
     return s
