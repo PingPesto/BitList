@@ -10,8 +10,8 @@ from redis import Redis
 # Redis DB schema
 # 0 / Job Data
 # 1 / Song Data
-# 2 / MUSIC DB Cache - 15 minute cache
-# 5 / Cache Data - 1 hour cache
+# 2 / MUSIC DB Cache
+# 3 / Playlist Cache
 
 
 

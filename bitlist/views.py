@@ -1,5 +1,9 @@
 from bitlist.db.cache import Cache
-from helpers import get_archive_links, get_random_song, redis_song_library
+from helpers import add_to_playlist
+from helpers import current_playlist
+from helpers import get_random_song
+from helpers import redis_song_library
+from helpers import get_song_by_id
 import jobs
 import json
 import player
@@ -12,7 +16,7 @@ from .models.song import Song
 def player_view(request):
     server_path = "http://{}:8000".format(request.host.split(':')[0])
     status = request.mpd.status()
-    playlist = request.mpd.playlist()
+    playlist = current_playlist()
     if status['state'] != 'play':
         random_song = get_random_song()
         request.mpd.add(random_song.url)
@@ -49,7 +53,7 @@ def player_status(request):
 
 @view_config(route_name='playlist', renderer='json')
 def player_playlist(request):
-    return request.mpd.playlist()
+    return current_playlist()
 
 @view_config(route_name='playlistshuffle', renderer='json')
 def player_playlist_shuffle(request):
@@ -69,10 +73,8 @@ def player_playlist_clear(request):
 
 @view_config(route_name='playlistenqueue', renderer='json')
 def player_playlist_enqueue(request):
-    song_id = request.matchdict['song']
-    song = pickle.loads(request.song_cache.get(song_id))
-    request.mpd.add(song.url)
-    return request.mpd.playlist()
+    add_to_playlist(request, request.matchdict['song'])
+    return current_playlist()
 
 
 # ======== FETCH API CONTROLS =======
