@@ -5,6 +5,7 @@ from bitlist.downloader import spotify
 from bitlist.models.song import Song
 from boto.s3.connection import S3Connection
 from helpers import sanitize_string
+from helpers import update_database
 from os import environ, remove, rmdir
 from path import Path
 from player import client as mpd
