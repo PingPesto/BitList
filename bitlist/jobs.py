@@ -53,8 +53,24 @@ def upload_file(filepath, delete=False, playlist_update=True):
         print "Added {}".format(key_url)
 
 
+@job('high', connection=worker_redis_conn, timeout=120)
+def warm_db_cache():
+    conn = S3Connection(s3_access_key, s3_secret_key)
+    bucket = conn.get_bucket(s3_bucket)
+    for item in bucket.list():
+        if item.name == None: continue
+        if not '.mp3' in item.name: continue
+
+        url = "http://s3.amazonaws.com/{}/{}".format(s3_bucket,item.name)
+        url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
+        title = sanitize_string(item.name.replace('.mp3', ''))
+        s = Song(title, url)
+        s.save()
+
+
+
 # Transcode and upload youtube music/videos
-@job('low', connection=worker_redis_conn, timeout=900)
+@job('youtube', connection=worker_redis_conn, timeout=900)
 def transcode_youtube_link(url):
     # Inspect the incoming variable to see if it is a URL or an ID
     if not "youtube.com" in url:
@@ -73,7 +89,7 @@ def transcode_youtube_link(url):
         upload_file.delay(f, delete=True)
 
 # Transcode and upload soundcloud music
-@job('low', connection=worker_redis_conn, timeout=900)
+@job('soundcloud', connection=worker_redis_conn, timeout=900)
 def transcode_soundcloud_link(user, song):
     url = "https://www.soundcloud.com/{}/{}".format(user, song)
 
@@ -89,7 +105,7 @@ def transcode_soundcloud_link(user, song):
 
 
 # Transcode and upload spotify music
-@job('low', connection=worker_redis_conn, timeout=900)
+@job('spotify', connection=worker_redis_conn, timeout=900)
 def transcode_spotify_link(url):
     dtmp = mkdtemp()
     tmp = Path(dtmp)
@@ -101,16 +117,4 @@ def transcode_spotify_link(url):
     for f in tmp.files():
         upload_file.delay(f, delete=True)
 
-
-@job('high', connection=worker_redis_conn, timeout=120)
-def warm_db_cache():
-    conn = S3Connection(s3_access_key, s3_secret_key)
-    bucket = conn.get_bucket(s3_bucket)
-    for item in bucket.list():
-        if item.name == None: continue
-        url = "http://s3.amazonaws.com/{}/{}".format(s3_bucket,item.name)
-        url = urllib.quote(url, safe="%/:=&?~#+!$,;'@()*[]")
-        title = sanitize_string(item.name.replace('.mp3', ''))
-        s = Song(title, url)
-        s.save()
 
