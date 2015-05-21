@@ -1,17 +1,16 @@
-from helpers import get_archive_links, get_random_song
+from bitlist.db.cache import Cache
+from helpers import get_archive_links, get_random_song, redis_song_library
 import jobs
 import json
 import player
 from pyramid.view import view_config
-from .models import DBSession, Song
-from .security import USERS
+from .models.song import Song
 
 
 # ======    FRONT END ROUTES   ==========
 @view_config(route_name='player', renderer='templates/player.jinja2')
 def player_view(request):
     server_path = "http://{}:8000".format(request.host.split(':')[0])
-    songs = DBSession.query(Song)
     status = request.mpd.status()
     playlist = request.mpd.playlist()
     if status['state'] != 'play':
@@ -22,7 +21,7 @@ def player_view(request):
     return { 'playlist': playlist,
              'status': status,
              'player_host': server_path,
-             'library': songs.all()}
+             'library': redis_song_library()}
 
 
 @view_config(route_name='home', renderer='templates/mytemplate.pt')
@@ -31,8 +30,8 @@ def my_view(request):
 
 @view_config(route_name='songs', renderer='json')
 def library(request):
-    songs = DBSession.query(Song)
-    return dict(songs=songs.all())
+    available_music = redis_song_library()
+    return dict(songs=available_music)
 
 # =======   MUSIC DAEMON CONTROLS =======
 @view_config(route_name='play', renderer='json')
@@ -59,10 +58,9 @@ def player_playlist_shuffle(request):
 
 @view_config(route_name='playlistseed', renderer='json')
 def player_playlist_seed(request):
-    for song in get_archive_links():
-        if ".mp3" in song:
-            DBSession.add(Song(title=song.split('/')[-1].split('.mp3')[0].replace("_", " "),
-                   url=song))
+    pid = jobs.warm_db_cache.delay()
+    return {'JobID': pid.id}
+
 
 @view_config(route_name='playlistclear', renderer='json')
 def player_playlist_clear(request):
@@ -72,7 +70,7 @@ def player_playlist_clear(request):
 @view_config(route_name='playlistenqueue', renderer='json')
 def player_playlist_enqueue(request):
     song_id = request.matchdict['song']
-    song = DBSession.query(Song).filter_by(uid=song_id).one()
+    song = pickle.loads(request.song_cache.get(song_id))
     request.mpd.add(song.url)
     return request.mpd.playlist()
 
