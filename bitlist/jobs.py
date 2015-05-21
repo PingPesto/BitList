@@ -6,6 +6,7 @@ from bitlist.models.song import Song
 from boto.s3.connection import S3Connection
 from helpers import sanitize_string
 from helpers import update_database
+from helpers import add_to_playlist
 from os import environ, remove, rmdir
 from path import Path
 from player import client as mpd
@@ -30,13 +31,16 @@ metadata_redis_conn = cache.connection(1)
 @job('high', connection=worker_redis_conn, timeout=120)
 def upload_file(filepath, delete=False, playlist_update=True):
     base = filepath.basename()
+    if ".info" in base:
+        print "Not uploading json"
+        return
     key_url = "http://s3.amazonaws.com/{}/{}".format(s3_bucket,
                    base)
     with open(filepath, 'rb') as f:
         conn = tinys3.Connection(s3_access_key, s3_secret_key, tls=True)
         conn.upload(base, f, s3_bucket)
 
-    update_database(filepath, key_url)
+    song = update_database(filepath, key_url)
 
     if delete:
         remove(filepath)
@@ -45,7 +49,7 @@ def upload_file(filepath, delete=False, playlist_update=True):
 
     if playlist_update and ".mp3" in filepath.basename():
         player = mpd()
-        player.add(key_url)
+        add_to_playlist(player, song.id)
         print "Added {}".format(key_url)
 
 
