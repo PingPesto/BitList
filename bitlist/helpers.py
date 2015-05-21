@@ -55,7 +55,7 @@ def current_playlist():
     return playlist
 
 def update_database(filepath, s3_url):
-    audiofile = MP3(afile, ID3=EasyID3)
+    audiofile = MP3(filepath, ID3=EasyID3)
     s = Song(audiofile.tags['title'],
              original_url=audiofile.tags['website'])
     s.save()
