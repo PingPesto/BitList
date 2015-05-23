@@ -1,4 +1,9 @@
 from bitlist.db.cache import Cache
+from bitlist.models.user import groupfinder
+from bitlist.models.user import RootFactory
+from os import getenv
+from pyramid.authentication import AuthTktAuthenticationPolicy
+from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.events import NewRequest
 from pyramid.config import Configurator
 import player
@@ -6,7 +11,13 @@ import player
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
-    config = Configurator(settings=settings)
+
+    authn_policy = AuthTktAuthenticationPolicy(getenv('AUTH_SECRET'),
+            callback=groupfinder, hashalg='sha512')
+    authz_policy = ACLAuthorizationPolicy()
+    config = Configurator(root_factory=RootFactory, settings=settings)
+    config.set_authentication_policy(authn_policy)
+    config.set_authorization_policy(authz_policy)
     config.include('pyramid_chameleon')
     config.include('pyramid_jinja2')
 
@@ -16,6 +27,8 @@ def main(global_config, **settings):
     config.add_static_view('css', 'static/css', cache_max_age=3600)
     config.add_static_view('fonts', 'static/fonts', cache_max_age=3600)
 
+    config.add_route('login', '/login')
+    config.add_route('logout', '/logout')
     config.add_route('home', '/')
     config.add_route('songs', '/songs')
     config.add_route('player', '/player')

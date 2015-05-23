@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" class="app">
+<head>  
+  <meta charset="utf-8" />
+  <title>Bitlist | Collaborative Playlists</title>
+  <meta name="description" content="Bitlist Collaborative Playlists" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <link rel="stylesheet" href="css/bootstrap.css" type="text/css" />
+  <link rel="stylesheet" href="css/animate.css" type="text/css" />
+  <link rel="stylesheet" href="css/simple-line-icons.css" type="text/css" />
+  <link rel="stylesheet" href="css/font.css" type="text/css" />
+  <link rel="stylesheet" href="css/app.css" type="text/css" />  
+    <!--[if lt IE 9]>
+    <script src="js/ie/html5shiv.js"></script>
+    <script src="js/ie/respond.min.js"></script>
+    <script src="js/ie/excanvas.js"></script>
+  <![endif]-->
+</head>
+<body class="bg-black dker">
+  <section id="content" class="m-t-lg wrapper-md animated fadeInUp">    
+    <div class="container aside-xl">
+      <a class="navbar-brand block" href="index.html"><span class="h1 font-bold">BitList</span></a>
+      <section class="m-b-lg">
+        <header class="wrapper text-center">
+          <strong>{{message}}</strong>
+        </header>
+        <form action="{{url}}" method="post">
+          <input type="hidden" name="came_from" value="{{came_from}}"/>
+          <div class="form-group">
+            <input type="email" placeholder="Email" class="form-control rounded input-lg text-center no-border" name="login", value="{{login}}">
+          </div>
+          <div class="form-group">
+             <input type="password" placeholder="Password" class="form-control rounded input-lg text-center no-border" name="password", value="{{password}}">
+          </div>
+          <button type="submit" class="btn btn-lg btn-warning lt b-white b-2x btn-block btn-rounded" name="form.submitted"><i class="icon-arrow-right pull-right"></i><span class="m-r-n-lg">Sign in</span></button>
+          <div class="line line-dashed"></div>
+          <p class="text-muted text-center"><small>Do not have an account?</small></p>
+        </form>
+      </section>
+    </div>
+  </section>
+  <!-- footer -->
+  <footer id="footer">
+    <div class="text-center padder">
+      <p>
+        <small>We're a small community, you probably weren't invited<br>&copy; 2015</small>
+      </p>
+    </div>
+  </footer>
+  <!-- / footer -->
+  <script src="js/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="js/bootstrap.js"></script>
+  <!-- App -->
+</body>
+</html>
