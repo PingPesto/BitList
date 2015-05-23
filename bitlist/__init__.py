@@ -1,11 +1,13 @@
 from bitlist.db.cache import Cache
 from bitlist.models.user import groupfinder
 from bitlist.models.user import RootFactory
+from bitlist.models.user import User
 from os import getenv
 from pyramid.authentication import AuthTktAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from pyramid.events import NewRequest
 from pyramid.config import Configurator
+from pyramid.security import unauthenticated_userid
 import player
 
 def main(global_config, **settings):
@@ -49,10 +51,15 @@ def main(global_config, **settings):
 
     config.scan()
     config.registry.mpd_client = player.client()
-    config.registry.song_cache = Cache().connection(2)
     config.add_request_method(lambda req : player.client(), "mpd", reify=True)
-    config.add_request_method(lambda req : Cache().connection(2), "song_cache", reify=True)
+    config.add_request_method(get_user, 'user', reify=True)
 
     # import ipdb; ipdb.set_trace();
     return config.make_wsgi_app()
+
+
+def get_user(request):
+    userid = unauthenticated_userid(request)
+    if userid is not None:
+        return User.get_by_email(userid)
 

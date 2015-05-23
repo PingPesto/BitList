@@ -5,6 +5,7 @@ import pickle
 from pyramid.security import Everyone
 from pyramid.security import Authenticated
 from pyramid.security import Allow
+from uuid import uuid4
 
 crypt = cryptacular.bcrypt.BCRYPTPasswordManager()
 
@@ -18,6 +19,7 @@ class User():
     def __init__(self, email, password, username):
         self.username = username
         self.email = email
+        self.avatar = self.generate_avatar()
         self._set_password(password)
         self.groups = ['listen']
 
@@ -54,6 +56,10 @@ class User():
                 groups=self.groups,
                 )
 
+    def generate_avatar(self):
+        # stubbed as paas until i decide to fold this into bitlist
+        base_url = "http://robohash.org/{}.png"
+        return base_url.format(self.email)
 
     def save(self):
         cache = Cache().connection(4)
