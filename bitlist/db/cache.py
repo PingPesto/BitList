@@ -12,6 +12,7 @@ import urlparse
 # 1 / Song Data
 # 2 / MUSIC DB Cache
 # 3 / Playlist Cache
+# 4 / User Database
 
 
 

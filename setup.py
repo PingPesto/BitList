@@ -23,6 +23,7 @@ requires = [
     'tinys3',
     'honcho',
     'spotify-ripper',
+    'cryptacular'
     ]
 
 setup(name='bitlist',

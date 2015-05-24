@@ -1,4 +1,5 @@
 from bitlist.db.cache import Cache
+from bitlist.models.user import User
 from helpers import add_to_playlist
 from helpers import current_playlist
 from helpers import get_random_song
@@ -7,21 +8,60 @@ from helpers import get_song_by_id
 import jobs
 import json
 import player
+from pyramid.security import remember
+from pyramid.security import forget
 from pyramid.view import view_config
+from pyramid.view import forbidden_view_config
+from pyramid.httpexceptions import HTTPFound
 from .models.song import Song
 
 
+# =====     Authentication Routes ======
+@view_config(route_name='login', renderer='templates/login.jinja2')
+@forbidden_view_config(renderer='templates/login.jinja2')
+def login(request):
+    login_url = request.route_url('login')
+    referrer = request.url
+    if referrer == login_url:
+        referrer = '/player' # never use the login form itself as came_from
+    came_from = request.params.get('came_from', referrer)
+    message = ''
+    login = ''
+    password = ''
+    if 'form.submitted' in request.params:
+        login = request.params['login']
+        password = request.params['password']
+        if User.check_password(login, password):
+            headers = remember(request, login)
+            return HTTPFound(location = came_from,
+                             headers = headers)
+        message = 'Failed login'
+    return dict(
+        message = message,
+        url = request.application_url + '/login',
+        came_from = came_from,
+        login = login,
+        password = password,
+    )
+
+@view_config(route_name='logout')
+def logout(request):
+    headers = forget(request)
+    return HTTPFound(location = "{}/login".format(request.application_url),
+                     headers = headers)
+
 # ======    FRONT END ROUTES   ==========
-@view_config(route_name='player', renderer='templates/player.jinja2')
+@view_config(route_name='player', renderer='templates/player.jinja2',
+             permission='listen')
 def player_view(request):
     server_path = "http://{}:8000".format(request.host.split(':')[0])
     status = request.mpd.status()
     playlist = current_playlist()
-    if status['state'] != 'play':
-        random_song = get_random_song()
-        add_to_playlist(request, random_song.id)
-        request.mpd.play()
-        status['state'] = 'play'
+    #if status['state'] != 'play':
+    #    random_song = get_random_song()
+    #    add_to_playlist(request, random_song.id)
+    #    request.mpd.play()
+    #    status['state'] = 'play'
     return { 'playlist': playlist,
              'status': status,
              'player_host': server_path,
