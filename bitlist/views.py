@@ -1,5 +1,6 @@
 from bitlist.db.cache import Cache
 from bitlist.models.user import User
+from bitlist.models.song import Song
 from helpers import add_to_playlist
 from helpers import current_playlist
 from helpers import get_random_song
@@ -76,6 +77,11 @@ def my_view(request):
 def library(request):
     available_music = redis_song_library()
     return dict(songs=available_music)
+
+@view_config(route_name='songinfo', renderer='json')
+def library(request):
+    song = Song.get_by_id(request.matchdict['songid']) 
+    return song
 
 # =======   MUSIC DAEMON CONTROLS =======
 @view_config(route_name='play', renderer='json')

@@ -33,6 +33,7 @@ def main(global_config, **settings):
     config.add_route('logout', '/logout')
     config.add_route('home', '/')
     config.add_route('songs', '/songs')
+    config.add_route('songinfo', '/songs/{songid}')
     config.add_route('player', '/player')
     config.add_route('play', '/player/play')
     config.add_route('skip', '/player/skip')
