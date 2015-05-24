@@ -44,3 +44,33 @@ function array_compare(a, b){
         return !(obj.id in bIds);
     });
 }
+
+/* Library Javascript */
+// Add Library Enqueue method
+$('.library-play').on('click', function(e){
+   console.log($(this).parent().data('value'))
+   $.ajax({
+       url: "/player/playlist/queue/" + $(this).parent().data('value'),
+   })
+  $(this).parent().fadeOut(1000)
+});
+
+$('.library-info').on('click', function(e){
+   console.log($(this).parent().data('value'))
+   $.ajax({
+       url: "/songs/" + $(this).parent().data('value'),
+   }).done(function(data){
+       console.log(data)
+       var modal = $('#song-info-modal')
+       modal.find('.modal-title').text(data['title'])
+       var source = $("#song-info-data").html();
+       var template = Handlebars.compile(source);
+       var html = template(data);
+       var body = modal.find('.modal-body')
+       body.children().remove()
+       body.append(html)
+   })
+   $('#song-info-modal').modal({'backdrop': true, 'keyboard': true})
+});
+
+

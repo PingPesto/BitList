@@ -16,6 +16,13 @@ class Song():
         self.album_art = album_art
         self.addedby = addedby
 
+
+    @classmethod
+    def get_by_id(cls, id):
+        cache = Cache().connection(2)
+        return pickle.loads(cache.get(id))
+
+
     def __json__(self, request):
         return dict(
             id=self.id,

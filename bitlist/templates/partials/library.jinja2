@@ -1,21 +1,29 @@
-
-
-            <section class="col-sm-4 no-padder bg">
+            <section class="col-sm-7 no-padder bg">
                 <section class="vbox">
                   <section class="scrollable hover">
                     <ul class="list-group list-group-lg no-bg auto m-b-none m-t-n-xxs">
                     {% for song in library %}
                       <li class="list-group-item clearfix library-item" data-value="{{ song.id }}">
-                        <a href="#" class="jp-play-me pull-right m-t-sm m-l text-md">
+                        <a href="#" class="pull-right m-t-sm m-l text-md library-play">
                           <i class="fa fa-plus-circle text"></i>
-                          <i class="icon-control-pause text-active"></i>
+                        </a>
+                        <a href="#" class="pull-right m-t-sm m-l text-md library-info">
+                          <i class="fa fa-info-circle text"></i>
                         </a>
                         <a href="#" class="pull-left thumb-sm m-r">
-                          <img src="images/m0.jpg" alt="...">
+                          {% if song.albumart %}
+                            <img src="{{song.albumart}}" alt="{{song.title}}">
+                          {% else %}
+                            <img src="/static/images/default-albumart.png" alt="{{song.title}}">
+                          {% endif %}
                         </a>
                         <a class="clear" href="#">
                           <span class="block text-ellipsis">{{ song.title |truncate(80) }}</span>
-                          <small class="text-muted">by Soph Ashe</small>
+                         {% if song.addedby %}
+                            <small class="text-muted">{{song.addedby}}</small>
+                         {% else %}
+                            <small class="text-muted">Added by: Anonymous</small>
+                         {% endif %}
                         </a>
                       </li>
                     {% endfor %}

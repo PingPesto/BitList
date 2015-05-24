@@ -496,7 +496,7 @@ a.list-group-item:focus {
   padding: 0;
 }
 .modal-backdrop {
-  background-color: #5a6a7a;
+  background-color: #000000;
 }
 .modal-backdrop.in {
   opacity: 0.8;
