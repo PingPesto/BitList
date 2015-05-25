@@ -18,6 +18,7 @@ requires = [
     'python-mpd2',
     'youtube-dl',
     'rq',
+    'redis',
     'path.py',
     'boto',
     'tinys3',
