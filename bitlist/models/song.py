@@ -2,7 +2,6 @@ from .user import User
 import datetime
 from pyramid_mongoengine import MongoEngine
 import random
-from time import sleep
 
 db = MongoEngine()
 
