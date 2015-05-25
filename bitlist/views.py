@@ -18,8 +18,9 @@ from .models.song import Song
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):
     login_url = request.route_url('login')
+    home_url = request.route_url('home')
     referrer = request.url
-    if referrer == login_url:
+    if referrer == login_url or referrer == home_url:
         referrer = '/player' # never use the login form itself as came_from
     came_from = request.params.get('came_from', referrer)
     message = ''
