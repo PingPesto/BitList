@@ -11,10 +11,7 @@ def sanitize_string(song_title):
     return unquote_plus(song_title)
 
 def update_database(filepath, s3_url):
-    print s3_url
     audiofile = MP3(filepath, ID3=EasyID3)
-    print audiofile.tags['title']
-    print audiofile.tags['website']
     s = Song()
     s.title = title=audiofile.tags['title'][0]
     s.url = s3_url
