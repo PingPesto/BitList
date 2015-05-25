@@ -7,12 +7,11 @@ from bitlist.models.song import Song
 from boto.s3.connection import S3Connection
 from helpers import sanitize_string
 from helpers import update_database
-from os import environ, remove, rmdir
+from os import environ, remove
 from path import Path
 from player import client as mpd
 from rq import Queue
 from rq.decorators import job
-import shutil
 from tempfile import mkdtemp
 import tinys3
 import urllib
