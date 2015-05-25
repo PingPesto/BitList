@@ -2,21 +2,25 @@ from bitlist.db.cache import Cache
 from bitlist.downloader import youtube
 from bitlist.downloader import soundcloud
 from bitlist.downloader import spotify
+from bitlist.models.playlist import Playlist
 from bitlist.models.song import Song
 from boto.s3.connection import S3Connection
 from helpers import sanitize_string
 from helpers import update_database
-from helpers import add_to_playlist
 from os import environ, remove, rmdir
 from path import Path
 from player import client as mpd
-from redis import Redis
 from rq import Queue
 from rq.decorators import job
 import shutil
 from tempfile import mkdtemp
 import tinys3
 import urllib
+from pyramid_mongoengine import MongoEngine
+db = MongoEngine()
+
+# TODO: This seems bad, dont hard-code the db
+db.connect('bitlist')
 
 s3_access_key = environ['S3_ACCESS_KEY']
 s3_secret_key = environ['S3_SECRET_KEY']
@@ -49,7 +53,8 @@ def upload_file(filepath, delete=False, playlist_update=True):
 
     if playlist_update and ".mp3" in filepath.basename():
         player = mpd()
-        add_to_playlist(player, song.id)
+        p = Playlist.get('default')
+        p.add(player, song.id)
         print "Added {}".format(key_url)
 
 
@@ -68,6 +73,8 @@ def warm_db_cache():
         s.save()
 
 
+# TODO: Clean these up - and turn this entire 3 method body block into a single
+# DRY method to work w/ the proper queue system.
 
 # Transcode and upload youtube music/videos
 @job('youtube', connection=worker_redis_conn, timeout=900)
@@ -75,13 +82,14 @@ def transcode_youtube_link(url):
     # Inspect the incoming variable to see if it is a URL or an ID
     if not "youtube.com" in url:
         url = "https://www.youtube.com/watch?v={}".format(url)
-    tmp = mkdtemp()
+    dtmp = mkdtemp()
+    tmp = Path(tmp)
     # if the job fails for any reason, cleanup. Re-enqueue will create
     # a new tmpdir and attempt the job again.
     try:
         youtube.download_url(url, temp_directory=tmp)
     except:
-        shutil.rmtree(tmp)
+        tmp.rmtree(tmp)
         print "Exception occurred during transcoding"
 
     p = Path(tmp)
@@ -98,7 +106,7 @@ def transcode_soundcloud_link(user, song):
     try:
         soundcloud.download_url(url, temp_directory=tmp)
     except:
-        shutil.rmtree(tmp)
+        tmp.rmtree(tmp)
 
     for f in tmp.files():
         upload_file.delay(f, delete=True)
@@ -112,7 +120,7 @@ def transcode_spotify_link(url):
     try:
         spotify.download_url(url, temp_directory=tmp)
     except:
-        shutil.rmtree(tmp)
+        tmp.rmtree(tmp)
 
     for f in tmp.files():
         upload_file.delay(f, delete=True)

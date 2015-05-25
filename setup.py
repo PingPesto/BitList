@@ -13,7 +13,7 @@ requires = [
     'pyramid_chameleon',
     'pyramid_debugtoolbar',
     'pyramid_jinja2',
-    'mysql-python',
+    'pyramid-mongoengine',
     'waitress',
     'python-mpd2',
     'youtube-dl',
@@ -23,7 +23,7 @@ requires = [
     'tinys3',
     'honcho',
     'spotify-ripper',
-    'cryptacular'
+    'cryptacular',
     ]
 
 setup(name='bitlist',
