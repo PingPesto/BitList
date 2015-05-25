@@ -5,6 +5,7 @@
 
 (function poll() {
     setTimeout(function () {
+        console.log('tick')
         $.ajax({
             type: 'GET',
             dataType: 'json',
@@ -17,7 +18,7 @@
             },
             complete: poll
         });
-    }, 5000);
+    }, 10000);
 })();
 
 

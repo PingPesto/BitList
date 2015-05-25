@@ -1,48 +1,46 @@
-from bitlist.db.cache import Cache
-import pickle
-from pyramid.security import Allow, Everyone
-from uuid import uuid4
+from .user import User
+import datetime
+from pyramid_mongoengine import MongoEngine
+import random
 
-class Song():
-    def __init__(self, title, url, artist=None, original_url=None, album=None,
-                  album_art=None, addedby=None, id=None):
-        if not id:
-            self.id = str(uuid4())
-        self.title = title
-        self.url = url
-        self.artist= artist
-        self.original_url = original_url
-        self.album = album
-        self.album_art = album_art
-        self.addedby = addedby
+db = MongoEngine()
 
+class Song(db.Document):
+
+    title = db.StringField(required=True)
+    url = db.StringField(required=True)
+    artist= db.StringField()
+    original_url = db.StringField()
+    album = db.StringField()
+    album_art = db.StringField()
+    addedby = db.ReferenceField(User, reverse_delete_rule=db.NULLIFY)
+    rand = db.FloatField(unique=True)
+    tags = db.ListField()
+    created_on = db.DateTimeField(default=datetime.datetime.now)
+    updated_on = db.DateTimeField(default=datetime.datetime.now)
 
     @classmethod
     def get_by_id(cls, id):
-        cache = Cache().connection(2)
-        return pickle.loads(cache.get(id))
+        song = cls.objects.get_or_404(id=id)
+        return song
 
+    @classmethod
+    def get_by_url(cls, url):
+        song = cls.objects.get_or_404(url=url)
+        return song
 
-    def __json__(self, request):
-        return dict(
-            id=self.id,
-            title=self.title,
-            artist=self.artist,
-            album=self.album,
-            album_art=self.album_art,
-            url=self.url,
-            original_url=self.original_url,
-            addedby=self.addedby)
+    @classmethod
+    def get_random(cls):
+        random.seed()
+        rand = random.random()
 
-    def save(self):
-        cache = Cache().connection(2)
-        cache.set(self.id, pickle.dumps(self))
+        songs = cls.objects(rand__gte=rand).limit(1)
+        return songs.first()
 
+    def clean(self):
+        if not self.rand:
+            self.rand = generate_random()
 
-
-class Root(object):
-    __acl__ = [(Allow, Everyone, 'view'),
-               (Allow, 'group:editors', 'edit')]
-
-    def __init__(self, request):
-        pass
+def generate_random():
+    random.seed()
+    return random.random()

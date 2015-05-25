@@ -1,4 +1,3 @@
-from bitlist.db.cache import Cache
 from bitlist.models.user import groupfinder
 from bitlist.models.user import RootFactory
 from bitlist.models.user import User
@@ -22,6 +21,9 @@ def main(global_config, **settings):
     config.set_authorization_policy(authz_policy)
     config.include('pyramid_chameleon')
     config.include('pyramid_jinja2')
+    config.include('pyramid_mongoengine')
+    config.add_settings({"mongodb_name": "bitlist", 'alias': 'default'})
+    config.add_connection_database()
 
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_static_view('js', 'static/js', cache_max_age=3600)
@@ -40,7 +42,6 @@ def main(global_config, **settings):
     config.add_route('status', '/player/status')
     config.add_route('playsong', '/player/play/{song}')
     config.add_route('playlist', '/player/playlist')
-    config.add_route('playlistshuffle', '/player/playlist/shuffle')
     config.add_route('playlistclear', '/player/playlist/clear')
     config.add_route('playlistseed', '/player/playlist/seed')
     config.add_route('playlistenqueue', '/player/playlist/queue/{song}')

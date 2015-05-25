@@ -1,11 +1,6 @@
-from bitlist.db.cache import Cache
 from bitlist.models.user import User
 from bitlist.models.song import Song
-from helpers import add_to_playlist
-from helpers import current_playlist
-from helpers import get_random_song
-from helpers import redis_song_library
-from helpers import get_song_by_id
+from bitlist.models.playlist import Playlist
 import jobs
 import json
 import player
@@ -18,6 +13,7 @@ from .models.song import Song
 
 
 # =====     Authentication Routes ======
+@view_config(route_name='home', renderer='templates/login.jinja2')
 @view_config(route_name='login', renderer='templates/login.jinja2')
 @forbidden_view_config(renderer='templates/login.jinja2')
 def login(request):
@@ -57,21 +53,17 @@ def logout(request):
 def player_view(request):
     server_path = "http://{}:8000".format(request.host.split(':')[0])
     status = request.mpd.status()
-    playlist = current_playlist()
-    #if status['state'] != 'play':
-    #    random_song = get_random_song()
-    #    add_to_playlist(request, random_song.id)
-    #    request.mpd.play()
-    #    status['state'] = 'play'
-    return { 'playlist': playlist,
+    playlist = Playlist.get('default')
+    if status['state'] != 'play':
+        random_song = Song.get_random()
+        playlist.add(request.mpd, random_song.id)
+        request.mpd.play()
+        status['state'] = 'play'
+    return { 'playlist': playlist.songs,
              'status': status,
              'player_host': server_path,
-             'library': redis_song_library()}
+             'library': Song.objects}
 
-
-@view_config(route_name='home', renderer='templates/mytemplate.pt')
-def my_view(request):
-    return {'project': 'bitlist'}
 
 @view_config(route_name='songs', renderer='json')
 def library(request):
@@ -79,8 +71,8 @@ def library(request):
     return dict(songs=available_music)
 
 @view_config(route_name='songinfo', renderer='json')
-def library(request):
-    song = Song.get_by_id(request.matchdict['songid']) 
+def songinfo(request):
+    song = Song.get_by_id(request.matchdict['songid'])
     return song
 
 # =======   MUSIC DAEMON CONTROLS =======
@@ -99,28 +91,21 @@ def player_status(request):
 
 @view_config(route_name='playlist', renderer='json')
 def player_playlist(request):
-    return current_playlist()
-
-@view_config(route_name='playlistshuffle', renderer='json')
-def player_playlist_shuffle(request):
-    request.mpd.shuffle()
-    return request.mpd.playlist()
+    #TODO: Use a playlist other than default
+    p = Playlist.objects(name='default').first()
+    return p.sync_with_mpd(request.mpd)
 
 @view_config(route_name='playlistseed', renderer='json')
 def player_playlist_seed(request):
     pid = jobs.warm_db_cache.delay()
     return {'JobID': pid.id}
 
-
-@view_config(route_name='playlistclear', renderer='json')
-def player_playlist_clear(request):
-    request.mpd.clear()
-    return request.mpd.playlist()
-
 @view_config(route_name='playlistenqueue', renderer='json')
 def player_playlist_enqueue(request):
-    add_to_playlist(request, request.matchdict['song'])
-    return current_playlist()
+    p = Playlist.get('default')
+    p.add(request.mpd, request.matchdict['song'])
+    p.reload()
+    return p.songs
 
 
 # ======== FETCH API CONTROLS =======
