@@ -82,7 +82,7 @@ def transcode_youtube_link(url):
     if not "youtube.com" in url:
         url = "https://www.youtube.com/watch?v={}".format(url)
     dtmp = mkdtemp()
-    tmp = Path(tmp)
+    tmp = Path(dtmp)
     # if the job fails for any reason, cleanup. Re-enqueue will create
     # a new tmpdir and attempt the job again.
     try:
