@@ -100,17 +100,12 @@ def player_playlist_seed(request):
     pid = jobs.warm_db_cache.delay()
     return {'JobID': pid.id}
 
-
-@view_config(route_name='playlistclear', renderer='json')
-def player_playlist_clear(request):
-    request.mpd.clear()
-    return request.mpd.playlist()
-
 @view_config(route_name='playlistenqueue', renderer='json')
 def player_playlist_enqueue(request):
-    # add_to_playlist(request, request.matchdict['song'])
-    #return current_playlist()
-    pass
+    p = Playlist.get('default')
+    p.add(request.mpd, request.matchdict['song'])
+    p.reload()
+    return p.songs
 
 
 # ======== FETCH API CONTROLS =======
