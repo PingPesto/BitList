@@ -16,6 +16,7 @@ from tempfile import mkdtemp
 import tinys3
 import urllib
 from pyramid_mongoengine import MongoEngine
+
 db = MongoEngine()
 
 # TODO: This seems bad, dont hard-code the db
@@ -27,7 +28,7 @@ s3_bucket = environ['S3_BUCKET']
 
 cache = Cache()
 worker_redis_conn = cache.connection(0)
-metadata_redis_conn = cache.connection(1)
+
 
 # Define the RQ Redis Queue
 
