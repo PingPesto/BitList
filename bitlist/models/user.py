@@ -21,14 +21,14 @@ class User(db.Document):
 
     @classmethod
     def get_by_email(cls, email):
-        user = cls.objects.get_or_404(email=email)
+        user = cls.objects(email=email).first()
         return user
 
     @classmethod
     def check_password(cls, email, password):
         user = cls.get_by_email(email)
         if not user:
-            return false
+            return False
         return crypt.check(user.password, password)
 
     def create_password(self, password):
