@@ -130,8 +130,4 @@ def fetch_spotify_url(request):
 
 
 # ======== Redis API CONTROLS =======
-@view_config(route_name='update_cache', renderer='json')
-def enqueue_update_cache(request):
-    jobs.enqueue_s3_scraper()
-    return {'Status': 'Success'}
 

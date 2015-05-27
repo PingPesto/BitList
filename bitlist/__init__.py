@@ -42,13 +42,12 @@ def main(global_config, **settings):
     config.add_route('status', '/player/status')
     config.add_route('playsong', '/player/play/{song}')
     config.add_route('playlist', '/player/playlist')
-    config.add_route('playlistclear', '/player/playlist/clear')
     config.add_route('playlistseed', '/player/playlist/seed')
     config.add_route('playlistenqueue', '/player/playlist/queue/{song}')
+
     config.add_route('fetch_youtube', '/fetch/youtube/{videoid}')
     config.add_route('fetch_soundcloud', '/fetch/soundcloud/{user}/{songid}')
     config.add_route('fetch_spotify', '/fetch/spotify/{resource}')
-    config.add_route('update_cache', '/cache/update')
 
 
     config.scan()
