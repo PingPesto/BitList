@@ -3917,3 +3917,8 @@ fieldset[disabled] .i-checks input + i:before {
     height: 65%;
   }
 }
+
+.song-avatar {
+    height: 20px;
+    width: 20px;
+}

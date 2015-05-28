@@ -1,6 +1,7 @@
 from .song import Song
 import datetime
 from pyramid_mongoengine import MongoEngine
+from bson import json_util
 
 db = MongoEngine()
 
@@ -41,6 +42,26 @@ class Playlist(db.Document):
         for x in self.songs:
             this_playlist.append(x.url)
         return self._diff(this_playlist, mpd_playlist)
+
+    # override the document to_json method to provide just the playlist.
+    def to_json(self):
+        data = self.to_mongo()
+        for x in range(0,len(self.songs)):
+            if self.songs[x].addedby:
+                data['songs'][x] = { "id": str(self.songs[x].id),
+                                 "title": self.songs[x].title,
+                                 "artist": self.songs[x].artist,
+                                 "addedby": {
+                                 "username": self.songs[x].addedby.username,
+                                 "avatar": self.songs[x].addedby.avatar,
+                                 "id": str(self.songs[x].addedby.id)
+                                 }}
+            else:
+                data['songs'][x] = { "id": str(self.songs[x].id),
+                                 "title": self.songs[x].title,
+                                 "artist": self.songs[x].artist}
+
+        return json_util.dumps(data['songs'])
 
 
 

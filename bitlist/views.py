@@ -94,7 +94,7 @@ def player_status(request):
 def player_playlist(request):
     #TODO: Use a playlist other than default
     p = Playlist.objects(name='default').first()
-    return p.songs
+    return p.to_json()
 
 @view_config(route_name='playlistseed', renderer='json')
 def player_playlist_seed(request):
