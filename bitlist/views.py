@@ -94,7 +94,7 @@ def player_status(request):
 def player_playlist(request):
     #TODO: Use a playlist other than default
     p = Playlist.objects(name='default').first()
-    return p.sync_with_mpd(request.mpd)
+    return p.songs
 
 @view_config(route_name='playlistseed', renderer='json')
 def player_playlist_seed(request):
@@ -130,8 +130,4 @@ def fetch_spotify_url(request):
 
 
 # ======== Redis API CONTROLS =======
-@view_config(route_name='update_cache', renderer='json')
-def enqueue_update_cache(request):
-    jobs.enqueue_s3_scraper()
-    return {'Status': 'Success'}
 
