@@ -1,11 +1,17 @@
 
 <ul id='playing-list' class="list-group list-group-lg no-radius no-border no-bg m-t-n-xxs m-b-none auto">
 {% for song in playlist %}
-  <li class="list-group-item">
+  <li class="list-group-item" data-id="{{song.id}}">
     <div class="pull-right m-l">
     </div>
     <div class="clear text-ellipsis">
-      <span>{{ song.title |replace("file: http://s3.amazonaws.com/oontz-room/", "")|replace("_", " ") |truncate(100) }}</span>
+    {% if song.addedby %}
+      <img class='song-avatar' src="{{ song.addedby.avatar }}" alt="{{ song.addedby.username }}">
+    {% endif %}
+    {% if song.artist %}
+      <span class='song-artist'>{{ song.artist }}</span>
+    {% endif %}
+      <span class='song-title'>{{ song.title }}</span>
     </div>
   </li>
 {% endfor %}

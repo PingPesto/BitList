@@ -1,8 +1,12 @@
 {# Playlist Item #}
 {% raw %}
 <script id="playlist-item-template" type="text/x-handlebars-template">
-  <li class="list-group-item">
+  <li class="list-group-item" data-id="{{ id }}">
     <div class="clear text-ellipsis">
+    {{# if addedby }}
+      <img class="song-avatar" src="{{ addedby.avatar }}" alt="{{ addedby.username }}">
+    {{/if }}
+      <span class='song-artist'>{{ artist }}</span>
       <span class='song-title'>{{ title }}</span>
     </div>
   </li>
