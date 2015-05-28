@@ -14,7 +14,7 @@
                 if(localStorage.getItem('debug') == "true"){
                     console.log(data)
                 }
-                update_playlist(data)
+                update_playlist(JSON.parse(data))
             },
             complete: poll
         });
